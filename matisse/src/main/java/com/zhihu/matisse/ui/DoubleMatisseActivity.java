@@ -17,6 +17,7 @@ public class DoubleMatisseActivity extends AppCompatActivity implements OnResult
 
         SelectionSpec mSpec = SelectionSpec.getInstance();
         setTheme(mSpec.themeId);
+
         if (!mSpec.hasInited) {
             setResult(RESULT_CANCELED);
             finish();
