@@ -1,16 +1,20 @@
 package com.zhihu.matisse.ui;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.util.AttributeSet;
 import android.view.View;
-import android.widget.AdapterView;
+import android.widget.FrameLayout;
 
 import com.zhihu.matisse.R;
 import com.zhihu.matisse.internal.entity.Album;
@@ -21,27 +25,32 @@ import com.zhihu.matisse.internal.model.SelectedItemCollection;
 import com.zhihu.matisse.internal.ui.AlbumPreviewActivity;
 import com.zhihu.matisse.internal.ui.BasePreviewActivity;
 import com.zhihu.matisse.internal.ui.MediaSelectionFragment;
+import com.zhihu.matisse.internal.ui.MediaSelectionLazyFragment;
 import com.zhihu.matisse.internal.ui.adapter.AlbumMediaAdapter;
 import com.zhihu.matisse.internal.ui.widget.IncapableDialog;
 import com.zhihu.matisse.internal.utils.MediaStoreCompat;
 import com.zhihu.matisse.internal.utils.PathUtils;
+import com.zhihu.matisse.listener.OnResultListener;
 
 import java.util.ArrayList;
 
 /**
- * 模仿了一遍
+ * become a view
  */
-public class DemoActivity extends AppCompatActivity implements
+public class MatisseView extends FrameLayout implements
         AlbumCollection.AlbumCallbacks,
-        MediaSelectionFragment.SelectionProvider,
+        MediaSelectionLazyFragment.SelectionProvider,
         AlbumMediaAdapter.CheckStateListener,
-        AlbumMediaAdapter.OnMediaClickListener, SelectionConfirmView.OnViewClickListener {
+        AlbumMediaAdapter.OnMediaClickListener,
+        SelectionConfirmView.OnViewClickListener {
 
     private final AlbumCollection mAlbumCollection = new AlbumCollection();
-    private SelectedItemCollection mSelectedCollection = new SelectedItemCollection(this);
+    private SelectedItemCollection mSelectedCollection = new SelectedItemCollection(getContext());
     private SelectionSpec mSpec;
+    /**
+     * for capture
+     */
     private MediaStoreCompat mMediaStoreCompat;
-
 
     /**
      * about View
@@ -55,43 +64,40 @@ public class DemoActivity extends AppCompatActivity implements
     public static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
     private static final int REQUEST_CODE_PREVIEW = 23;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        mSpec = SelectionSpec.getInstance();
-        setTheme(mSpec.themeId);
-        if (!mSpec.hasInited) {
-            setResult(RESULT_CANCELED);
-            finish();
-            return;
-        }
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_demo);
+    OnResultListener onResultListener;
 
-        if (mSpec.needOrientationRestriction()) {
-            setRequestedOrientation(mSpec.orientation);
-        }
+    public MatisseView(@NonNull Context context) {
+        super(context);
+        initView(context);
+    }
 
-        if (mSpec.capture) {
-            mMediaStoreCompat = new MediaStoreCompat(this);
-            if (mSpec.captureStrategy == null) {
-                throw new RuntimeException("Don't forget to set CaptureStrategy.");
-            }
-            mMediaStoreCompat.setCaptureStrategy(mSpec.captureStrategy);
-        }
+    public MatisseView(@NonNull Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        initView(context);
+    }
 
-        mSelectedCollection.onCreate(savedInstanceState);
-        mAlbumCollection.onCreate(this, this);
-        mAlbumCollection.onRestoreInstanceState(savedInstanceState);
-        mAlbumCollection.loadAlbums();
-
+    private void initView(Context context) {
+        inflate(context, R.layout.view_matisse, this);
 
         selectionConfirmView = findViewById(R.id.sc);
-
         mEmptyView = findViewById(R.id.empty_view);
-
         mContainer = findViewById(R.id.fl_container);
         selectionConfirmView.setOnViewClickListener(this);
+
+        initAlbum();
+    }
+
+    public void initAlbum() {
+        if (!(getContext() instanceof FragmentActivity)) {
+            throw new RuntimeException("Context must be FragmentActivity.");
+        }
+        mSpec = SelectionSpec.getInstance();
+        mSelectedCollection.onCreate(null);
+        mAlbumCollection.onCreate((FragmentActivity) getContext(), this);
+        mAlbumCollection.onRestoreInstanceState(null);
+        mAlbumCollection.loadAlbums();
+        updateBottomToolbar();
     }
 
     @Override
@@ -126,11 +132,19 @@ public class DemoActivity extends AppCompatActivity implements
             selectionConfirmView.setVisibility(View.VISIBLE);
             mEmptyView.setVisibility(View.GONE);
 
-            Fragment fragment = MediaSelectionFragment.newInstance(album);
-            getSupportFragmentManager()
+            final MediaSelectionLazyFragment fragment = MediaSelectionLazyFragment.newInstance(album);
+            ((FragmentActivity) getContext()).getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fl_container, fragment, MediaSelectionFragment.class.getSimpleName())
+                    .replace(R.id.fl_container, fragment, MediaSelectionLazyFragment.class.getSimpleName())
                     .commitAllowingStateLoss();
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    fragment.attach(MatisseView.this);
+                    fragment.onLazyLoad();
+                }
+            }, 150);
         }
     }
 
@@ -160,14 +174,12 @@ public class DemoActivity extends AppCompatActivity implements
             selectionConfirmView.setSendBtnEnable(true);
         }
 
-
         if (mSpec.originalable) {
             selectionConfirmView.setOriginalItemVisible(View.VISIBLE);
-            selectionConfirmView.updateOriginalState(getSupportFragmentManager(), mSelectedCollection.asList(), mSpec.originalMaxSize);
+            selectionConfirmView.updateOriginalState(((FragmentActivity) getContext()).getSupportFragmentManager(), mSelectedCollection.asList(), mSpec.originalMaxSize);
         } else {
             selectionConfirmView.setOriginalItemVisible(View.INVISIBLE);
         }
-
     }
 
     /**
@@ -179,10 +191,8 @@ public class DemoActivity extends AppCompatActivity implements
     public boolean onOriginalClick() {
         int count = selectionConfirmView.countOverMaxSize(mSelectedCollection.asList(), mSpec.originalMaxSize);
         if (count > 0) {
-            IncapableDialog incapableDialog = IncapableDialog.newInstance("",
-                    getString(R.string.error_over_original_count, count, mSpec.originalMaxSize));
-            incapableDialog.show(getSupportFragmentManager(),
-                    IncapableDialog.class.getName());
+            IncapableDialog incapableDialog = IncapableDialog.newInstance("", getResources().getString(R.string.error_over_original_count, count, mSpec.originalMaxSize));
+            incapableDialog.show(((FragmentActivity) getContext()).getSupportFragmentManager(), IncapableDialog.class.getName());
             return false;
         }
         if (mSpec.onCheckedListener != null) {
@@ -199,8 +209,10 @@ public class DemoActivity extends AppCompatActivity implements
         ArrayList<String> selectedPaths = (ArrayList<String>) mSelectedCollection.asListOfString();
         result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths);
         result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, selectionConfirmView.isOriginalEnable());
-        setResult(RESULT_OK, result);
-        finish();
+
+        if (onResultListener != null) {
+            onResultListener.onResult(Activity.RESULT_OK, result);
+        }
     }
 
 
@@ -213,22 +225,27 @@ public class DemoActivity extends AppCompatActivity implements
      */
     @Override
     public void onMediaClick(Album album, Item item, int adapterPosition) {
-        Intent intent = new Intent(this, AlbumPreviewActivity.class);
+        Intent intent = new Intent(getContext(), AlbumPreviewActivity.class);
         intent.putExtra(AlbumPreviewActivity.EXTRA_ALBUM, album);
         intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
         intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
         intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, selectionConfirmView.isOriginalEnable());
-        startActivityForResult(intent, REQUEST_CODE_PREVIEW);
+        ((FragmentActivity) getContext()).startActivityForResult(intent, REQUEST_CODE_PREVIEW);
     }
 
+    public void setOnResultListener(OnResultListener onResultListener) {
+        this.onResultListener = onResultListener;
+    }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != RESULT_OK) {
+    /**
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != Activity.RESULT_OK) {
             return;
         }
-
         if (requestCode == REQUEST_CODE_PREVIEW) {
             Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
             ArrayList<Item> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
@@ -245,20 +262,21 @@ public class DemoActivity extends AppCompatActivity implements
                 if (selected != null) {
                     for (Item item : selected) {
                         selectedUris.add(item.getContentUri());
-                        selectedPaths.add(PathUtils.getPath(this, item.getContentUri()));
+                        selectedPaths.add(PathUtils.getPath(getContext(), item.getContentUri()));
                     }
                 }
                 result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selectedUris);
                 result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths);
                 result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, selectionConfirmView.isOriginalEnable());
-                setResult(RESULT_OK, result);
-                finish();
+                if (onResultListener != null) {
+                    onResultListener.onResult(Activity.RESULT_OK, result);
+                }
             } else {
                 /**
                  * just return
                  */
                 mSelectedCollection.overwrite(selected, collectionType);
-                Fragment mediaSelectionFragment = getSupportFragmentManager().findFragmentByTag(
+                Fragment mediaSelectionFragment = ((FragmentActivity) getContext()).getSupportFragmentManager().findFragmentByTag(
                         MediaSelectionFragment.class.getSimpleName());
                 if (mediaSelectionFragment instanceof MediaSelectionFragment) {
                     ((MediaSelectionFragment) mediaSelectionFragment).refreshMediaGrid();
@@ -267,6 +285,4 @@ public class DemoActivity extends AppCompatActivity implements
             }
         }
     }
-
-
 }

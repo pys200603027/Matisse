@@ -23,7 +23,8 @@
         <activity android:name=".ui.MatisseActivity" />
         <activity android:name=".internal.ui.AlbumPreviewActivity" />
         <activity android:name=".internal.ui.SelectedPreviewActivity" />
-        <activity android:name=".ui.DemoActivity"></activity>
+        <activity android:name=".ui.CopyMatisseActivity" />
+        <activity android:name=".ui.DoubleMatisseActivity"></activity>
     </application>
 
 </manifest>
