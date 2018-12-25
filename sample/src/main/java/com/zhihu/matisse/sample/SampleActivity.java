@@ -123,7 +123,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
                                             .originalEnable(true)
                                             .maxOriginalSize(10)
                                             .imageEngine(new PicassoEngine())
-                                            .forResult(REQUEST_CODE_CHOOSE);
+                                            .forDemo(REQUEST_CODE_CHOOSE);
                                     break;
                                 default:
                                     break;

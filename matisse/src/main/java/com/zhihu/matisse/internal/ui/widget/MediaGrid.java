@@ -156,6 +156,14 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
             mCheckViewCountable = checkViewCountable;
             mViewHolder = viewHolder;
         }
+
+        public Drawable getmPlaceholder() {
+            return mPlaceholder;
+        }
+
+        public int getmResize() {
+            return mResize;
+        }
     }
 
 }
