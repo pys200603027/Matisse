@@ -25,6 +25,7 @@ import com.zhihu.matisse.engine.ImageEngine;
 import com.zhihu.matisse.engine.impl.GlideEngine;
 import com.zhihu.matisse.filter.Filter;
 import com.zhihu.matisse.listener.OnCheckedListener;
+import com.zhihu.matisse.listener.OnResultListener;
 import com.zhihu.matisse.listener.OnSelectedListener;
 
 import java.util.List;
@@ -55,6 +56,7 @@ public final class SelectionSpec {
     public boolean autoHideToobar;
     public int originalMaxSize;
     public OnCheckedListener onCheckedListener;
+    public OnResultListener onResultListener;
 
     private SelectionSpec() {
     }

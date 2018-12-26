@@ -30,10 +30,17 @@ public class DoubleMatisseActivity extends AppCompatActivity implements OnResult
         matisseView.setOnResultListener(this);
     }
 
+    /**
+     * for preview callback
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        matisseView.onActivityResult(requestCode, resultCode, data);
+        ActivityResultHelper.getInstance().onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -41,4 +48,5 @@ public class DoubleMatisseActivity extends AppCompatActivity implements OnResult
         setResult(requestCode, data);
         finish();
     }
+
 }

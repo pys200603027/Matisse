@@ -24,12 +24,11 @@ import com.zhihu.matisse.internal.model.AlbumCollection;
 import com.zhihu.matisse.internal.model.SelectedItemCollection;
 import com.zhihu.matisse.internal.ui.AlbumPreviewActivity;
 import com.zhihu.matisse.internal.ui.BasePreviewActivity;
-import com.zhihu.matisse.internal.ui.MediaSelectionFragment;
-import com.zhihu.matisse.internal.ui.MediaSelectionLazyFragment;
 import com.zhihu.matisse.internal.ui.adapter.AlbumMediaAdapter;
 import com.zhihu.matisse.internal.ui.widget.IncapableDialog;
 import com.zhihu.matisse.internal.utils.MediaStoreCompat;
 import com.zhihu.matisse.internal.utils.PathUtils;
+import com.zhihu.matisse.listener.OnActivityResultListenter;
 import com.zhihu.matisse.listener.OnResultListener;
 
 import java.util.ArrayList;
@@ -42,7 +41,8 @@ public class MatisseView extends FrameLayout implements
         MediaSelectionLazyFragment.SelectionProvider,
         AlbumMediaAdapter.CheckStateListener,
         AlbumMediaAdapter.OnMediaClickListener,
-        SelectionConfirmView.OnViewClickListener {
+        SelectionConfirmView.OnViewClickListener,
+        OnActivityResultListenter {
 
     private final AlbumCollection mAlbumCollection = new AlbumCollection();
     private SelectedItemCollection mSelectedCollection = new SelectedItemCollection(getContext());
@@ -86,6 +86,12 @@ public class MatisseView extends FrameLayout implements
         selectionConfirmView.setOnViewClickListener(this);
 
         initAlbum();
+        /**
+         * for outer result callback
+         */
+        if (mSpec.onResultListener != null) {
+            this.onResultListener = mSpec.onResultListener;
+        }
     }
 
     public void initAlbum() {
@@ -237,11 +243,13 @@ public class MatisseView extends FrameLayout implements
         this.onResultListener = onResultListener;
     }
 
+
     /**
      * @param requestCode
      * @param resultCode
      * @param data
      */
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != Activity.RESULT_OK) {
             return;
@@ -277,12 +285,24 @@ public class MatisseView extends FrameLayout implements
                  */
                 mSelectedCollection.overwrite(selected, collectionType);
                 Fragment mediaSelectionFragment = ((FragmentActivity) getContext()).getSupportFragmentManager().findFragmentByTag(
-                        MediaSelectionFragment.class.getSimpleName());
-                if (mediaSelectionFragment instanceof MediaSelectionFragment) {
-                    ((MediaSelectionFragment) mediaSelectionFragment).refreshMediaGrid();
+                        MediaSelectionLazyFragment.class.getSimpleName());
+                if (mediaSelectionFragment instanceof MediaSelectionLazyFragment) {
+                    ((MediaSelectionLazyFragment) mediaSelectionFragment).refreshMediaGrid();
                 }
                 updateBottomToolbar();
             }
         }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        ActivityResultHelper.getInstance().setActivityResultListenter(this);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        ActivityResultHelper.getInstance().setActivityResultListenter(null);
     }
 }
