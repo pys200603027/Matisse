@@ -67,6 +67,8 @@ public class MatisseView extends FrameLayout implements
 
     OnResultListener onResultListener;
 
+    MediaSelectionLazyFragment fragment;
+
     public MatisseView(@NonNull Context context) {
         super(context);
         initView(context);
@@ -74,6 +76,11 @@ public class MatisseView extends FrameLayout implements
 
     public MatisseView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        initView(context);
+    }
+
+    public MatisseView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
         initView(context);
     }
 
@@ -138,7 +145,7 @@ public class MatisseView extends FrameLayout implements
             selectionConfirmView.setVisibility(View.VISIBLE);
             mEmptyView.setVisibility(View.GONE);
 
-            final MediaSelectionLazyFragment fragment = MediaSelectionLazyFragment.newInstance(album);
+            fragment = MediaSelectionLazyFragment.newInstance(album);
             ((FragmentActivity) getContext()).getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fl_container, fragment, MediaSelectionLazyFragment.class.getSimpleName())
@@ -219,6 +226,13 @@ public class MatisseView extends FrameLayout implements
         if (onResultListener != null) {
             onResultListener.onResult(Activity.RESULT_OK, result);
         }
+
+        //重新刷新相册列表
+        mSelectedCollection.overwrite(new ArrayList<Item>(), SelectedItemCollection.COLLECTION_UNDEFINED);
+        if (fragment != null) {
+            fragment.refreshMediaGrid();
+        }
+        updateBottomToolbar();
     }
 
 
@@ -284,11 +298,15 @@ public class MatisseView extends FrameLayout implements
                  * just return
                  */
                 mSelectedCollection.overwrite(selected, collectionType);
-                Fragment mediaSelectionFragment = ((FragmentActivity) getContext()).getSupportFragmentManager().findFragmentByTag(
-                        MediaSelectionLazyFragment.class.getSimpleName());
-                if (mediaSelectionFragment instanceof MediaSelectionLazyFragment) {
-                    ((MediaSelectionLazyFragment) mediaSelectionFragment).refreshMediaGrid();
+                if (fragment != null) {
+                    fragment.refreshMediaGrid();
                 }
+
+//                Fragment mediaSelectionFragment = ((FragmentActivity) getContext()).getSupportFragmentManager().findFragmentByTag(
+//                        MediaSelectionLazyFragment.class.getSimpleName());
+//                if (mediaSelectionFragment instanceof MediaSelectionLazyFragment) {
+//
+//                }
                 updateBottomToolbar();
             }
         }

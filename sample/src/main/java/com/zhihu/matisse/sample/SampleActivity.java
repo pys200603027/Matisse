@@ -39,6 +39,7 @@ import com.zhihu.matisse.filter.Filter;
 import com.zhihu.matisse.internal.entity.CaptureStrategy;
 import com.zhihu.matisse.listener.OnCheckedListener;
 import com.zhihu.matisse.listener.OnSelectedListener;
+import com.zhihu.matisse.ui.DoubleMatisseActivity;
 
 import java.util.List;
 
@@ -114,16 +115,8 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
                                             .forResult(REQUEST_CODE_CHOOSE);
                                     break;
                                 case R.id.dracula:
-                                    Matisse.from(SampleActivity.this)
-                                            .choose(MimeType.ofImage())
-                                            .theme(R.style.Matisse_Dracula)
-                                            .countable(false)
-                                            .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
-                                            .maxSelectable(9)
-                                            .originalEnable(true)
-                                            .maxOriginalSize(10)
-                                            .imageEngine(new PicassoEngine())
-                                            .forDemo(REQUEST_CODE_CHOOSE);
+                                    Intent intent=new Intent(SampleActivity.this,DoubleMatisseActivity.class);
+                                    startActivity(intent);
                                     break;
                                 default:
                                     break;
