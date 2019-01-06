@@ -92,7 +92,7 @@ public class MatisseView extends FrameLayout implements
         mContainer = findViewById(R.id.fl_container);
         selectionConfirmView.setOnViewClickListener(this);
 
-        initAlbum();
+        mSpec = SelectionSpec.getInstance();
         /**
          * for outer result callback
          */
@@ -105,7 +105,7 @@ public class MatisseView extends FrameLayout implements
         if (!(getContext() instanceof FragmentActivity)) {
             throw new RuntimeException("Context must be FragmentActivity.");
         }
-        mSpec = SelectionSpec.getInstance();
+
         mSelectedCollection.onCreate(null);
         mAlbumCollection.onCreate((FragmentActivity) getContext(), this);
         mAlbumCollection.onRestoreInstanceState(null);
@@ -191,7 +191,7 @@ public class MatisseView extends FrameLayout implements
             selectionConfirmView.setOriginalItemVisible(View.VISIBLE);
             selectionConfirmView.updateOriginalState(((FragmentActivity) getContext()).getSupportFragmentManager(), mSelectedCollection.asList(), mSpec.originalMaxSize);
         } else {
-            selectionConfirmView.setOriginalItemVisible(View.INVISIBLE);
+            selectionConfirmView.setOriginalItemVisible(View.GONE);
         }
     }
 
@@ -227,12 +227,22 @@ public class MatisseView extends FrameLayout implements
             onResultListener.onResult(Activity.RESULT_OK, result);
         }
 
+        refreshMedia();
+    }
+
+    public void refreshMedia() {
         //重新刷新相册列表
-        mSelectedCollection.overwrite(new ArrayList<Item>(), SelectedItemCollection.COLLECTION_UNDEFINED);
-        if (fragment != null) {
-            fragment.refreshMediaGrid();
+        try {
+            // TODO: 2019/1/5 次数可能空指针
+            mSelectedCollection.overwrite(new ArrayList<Item>(), SelectedItemCollection.COLLECTION_UNDEFINED);
+            if (fragment != null) {
+                fragment.refreshMediaGrid();
+            }
+            updateBottomToolbar();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        updateBottomToolbar();
+
     }
 
 

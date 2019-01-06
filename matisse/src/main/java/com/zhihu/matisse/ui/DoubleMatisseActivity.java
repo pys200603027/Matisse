@@ -24,7 +24,7 @@ public class DoubleMatisseActivity extends AppCompatActivity implements OnResult
                 .theme(R.style.Matisse_Dracula)
                 .countable(false)
                 .maxSelectable(9)
-                .originalEnable(true)
+                .originalEnable(false)
                 .maxOriginalSize(10)
                 .imageEngine(new PicassoEngine())
                 .forCallback(new OnResultListener() {
@@ -36,6 +36,7 @@ public class DoubleMatisseActivity extends AppCompatActivity implements OnResult
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_double_matisse);
         matisseView = findViewById(R.id.mv);
+        matisseView.initAlbum();
     }
 
     /**
