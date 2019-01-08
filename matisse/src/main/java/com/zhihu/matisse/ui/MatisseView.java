@@ -300,6 +300,7 @@ public class MatisseView extends FrameLayout implements
                 result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selectedUris);
                 result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths);
                 result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, selectionConfirmView.isOriginalEnable());
+                refreshMedia();
                 if (onResultListener != null) {
                     onResultListener.onResult(Activity.RESULT_OK, result);
                 }

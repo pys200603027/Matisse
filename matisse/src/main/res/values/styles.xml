@@ -31,7 +31,7 @@
         <item name="item.placeholder">@color/zhihu_item_placeholder</item>
         <item name="item.checkCircle.backgroundColor">@color/zhihu_item_checkCircle_backgroundColor</item>
         <item name="item.checkCircle.borderColor">@color/zhihu_item_checkCircle_borderColor</item>
-        <item name="page.bg">@color/zhihu_page_bg</item>
+        <item name="page.bg">@color/zhihu_page_bg_v2</item>
         <item name="bottomToolbar.bg">@color/zhihu_bottom_toolbar_bg</item>
         <item name="bottomToolbar.preview.textColor">@color/zhihu_bottom_toolbar_preview</item>
         <item name="bottomToolbar.apply.textColor">@color/zhihu_bottom_toolbar_apply</item>
