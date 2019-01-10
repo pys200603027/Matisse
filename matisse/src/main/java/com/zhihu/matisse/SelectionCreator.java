@@ -346,6 +346,11 @@ public final class SelectionCreator {
         return this;
     }
 
+    public SelectionCreator setExpandingHeight(int height) {
+        mSelectionSpec.expandingHeight = height;
+        return this;
+    }
+
     /**
      * Start to select media and wait for result.
      *

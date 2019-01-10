@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.zhihu.matisse.R;
@@ -68,6 +69,10 @@ public class MatisseView extends FrameLayout implements
     OnResultListener onResultListener;
 
     MediaSelectionLazyFragment fragment;
+    /**
+     * 选中 /未选中 参数
+     */
+    LayoutExpandingParams layoutExpandingParams;
 
     public MatisseView(@NonNull Context context) {
         super(context);
@@ -99,6 +104,7 @@ public class MatisseView extends FrameLayout implements
         if (mSpec.onResultListener != null) {
             this.onResultListener = mSpec.onResultListener;
         }
+        layoutExpandingParams = new LayoutExpandingParams();
     }
 
     public void initAlbum() {
@@ -138,11 +144,9 @@ public class MatisseView extends FrameLayout implements
     private void onAlbumSelected(Album album) {
         if (album.isAll() && album.isEmpty()) {
             mContainer.setVisibility(View.GONE);
-            selectionConfirmView.setVisibility(View.GONE);
             mEmptyView.setVisibility(View.VISIBLE);
         } else {
             mContainer.setVisibility(View.VISIBLE);
-            selectionConfirmView.setVisibility(View.VISIBLE);
             mEmptyView.setVisibility(View.GONE);
 
             fragment = MediaSelectionLazyFragment.newInstance(album);
@@ -161,15 +165,45 @@ public class MatisseView extends FrameLayout implements
         }
     }
 
+
     @Override
     public SelectedItemCollection provideSelectedItemCollection() {
         return mSelectedCollection;
     }
 
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+    }
 
     @Override
     public void onUpdate() {
+        if (mSelectedCollection != null) {
+            if (mSelectedCollection.isEmpty()) {
+                selectionConfirmView.setVisibility(GONE);
+            } else {
+                selectionConfirmView.setVisibility(VISIBLE);
+            }
+        }
+
         updateBottomToolbar();
+
+        if (mSelectedCollection != null && mSpec.expandingHeight != 0) {
+            if (layoutExpandingParams.originHeight == 0) {
+                layoutExpandingParams.originHeight = getHeight();
+            }
+
+            if (mSelectedCollection.count() == 1 && mSelectedCollection.count() > layoutExpandingParams.lastSelectCount) {
+                ViewGroup.LayoutParams lp = getLayoutParams();
+                lp.height = mSpec.expandingHeight;
+                setLayoutParams(lp);
+            } else if (mSelectedCollection.isEmpty()) {
+                ViewGroup.LayoutParams lp = getLayoutParams();
+                lp.height = layoutExpandingParams.originHeight;
+                setLayoutParams(lp);
+            }
+        }
+
 
         if (mSpec.onSelectedListener != null) {
             mSpec.onSelectedListener.onSelected(
@@ -178,6 +212,10 @@ public class MatisseView extends FrameLayout implements
     }
 
     private void updateBottomToolbar() {
+        if (selectionConfirmView.getVisibility() != VISIBLE) {
+            return;
+        }
+
         selectionConfirmView.update(mSelectedCollection.asListOfUri());
 
         int selectedCount = mSelectedCollection.count();
@@ -333,5 +371,16 @@ public class MatisseView extends FrameLayout implements
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         ActivityResultHelper.getInstance().setActivityResultListenter(null);
+    }
+
+    class LayoutExpandingParams {
+        /**
+         * 原有高度
+         */
+        int originHeight = 0;
+        /**
+         * 上一次选择数量
+         */
+        int lastSelectCount = 0;
     }
 }

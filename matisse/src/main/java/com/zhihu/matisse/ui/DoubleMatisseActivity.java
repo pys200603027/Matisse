@@ -26,6 +26,7 @@ public class DoubleMatisseActivity extends AppCompatActivity implements OnResult
                 .maxSelectable(9)
                 .originalEnable(false)
                 .maxOriginalSize(10)
+                .setExpandingHeight(1000)
                 .imageEngine(new PicassoEngine())
                 .forCallback(new OnResultListener() {
                     @Override
