@@ -69,10 +69,7 @@ public class MatisseView extends FrameLayout implements
     OnResultListener onResultListener;
 
     MediaSelectionLazyFragment fragment;
-    /**
-     * 选中 /未选中 参数
-     */
-    LayoutExpandingParams layoutExpandingParams;
+
 
     public MatisseView(@NonNull Context context) {
         super(context);
@@ -95,6 +92,12 @@ public class MatisseView extends FrameLayout implements
         selectionConfirmView = findViewById(R.id.sc);
         mEmptyView = findViewById(R.id.empty_view);
         mContainer = findViewById(R.id.fl_container);
+        selectionConfirmView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
         selectionConfirmView.setOnViewClickListener(this);
 
         mSpec = SelectionSpec.getInstance();
@@ -104,7 +107,6 @@ public class MatisseView extends FrameLayout implements
         if (mSpec.onResultListener != null) {
             this.onResultListener = mSpec.onResultListener;
         }
-        layoutExpandingParams = new LayoutExpandingParams();
     }
 
     public void initAlbum() {
@@ -188,23 +190,6 @@ public class MatisseView extends FrameLayout implements
 
         updateBottomToolbar();
 
-        if (mSelectedCollection != null && mSpec.expandingHeight != 0) {
-            if (layoutExpandingParams.originHeight == 0) {
-                layoutExpandingParams.originHeight = getHeight();
-            }
-
-            if (mSelectedCollection.count() == 1 && mSelectedCollection.count() > layoutExpandingParams.lastSelectCount) {
-                ViewGroup.LayoutParams lp = getLayoutParams();
-                lp.height = mSpec.expandingHeight;
-                setLayoutParams(lp);
-            } else if (mSelectedCollection.isEmpty()) {
-                ViewGroup.LayoutParams lp = getLayoutParams();
-                lp.height = layoutExpandingParams.originHeight;
-                setLayoutParams(lp);
-            }
-        }
-
-
         if (mSpec.onSelectedListener != null) {
             mSpec.onSelectedListener.onSelected(
                     mSelectedCollection.asListOfUri(), mSelectedCollection.asListOfString());
@@ -269,7 +254,7 @@ public class MatisseView extends FrameLayout implements
     }
 
     public void refreshMedia() {
-        //重新刷新相册列表
+        //refresh album
         try {
             // TODO: 2019/1/5 次数可能空指针
             mSelectedCollection.overwrite(new ArrayList<Item>(), SelectedItemCollection.COLLECTION_UNDEFINED);
@@ -277,10 +262,10 @@ public class MatisseView extends FrameLayout implements
                 fragment.refreshMediaGrid();
             }
             updateBottomToolbar();
+            selectionConfirmView.setVisibility(GONE);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
 
@@ -350,12 +335,12 @@ public class MatisseView extends FrameLayout implements
                 if (fragment != null) {
                     fragment.refreshMediaGrid();
                 }
-
-//                Fragment mediaSelectionFragment = ((FragmentActivity) getContext()).getSupportFragmentManager().findFragmentByTag(
-//                        MediaSelectionLazyFragment.class.getSimpleName());
-//                if (mediaSelectionFragment instanceof MediaSelectionLazyFragment) {
-//
-//                }
+                //check bottomBar Visible
+                if (mSelectedCollection.isEmpty()) {
+                    selectionConfirmView.setVisibility(GONE);
+                } else {
+                    selectionConfirmView.setVisibility(VISIBLE);
+                }
                 updateBottomToolbar();
             }
         }
@@ -373,14 +358,13 @@ public class MatisseView extends FrameLayout implements
         ActivityResultHelper.getInstance().setActivityResultListenter(null);
     }
 
-    class LayoutExpandingParams {
-        /**
-         * 原有高度
-         */
-        int originHeight = 0;
-        /**
-         * 上一次选择数量
-         */
-        int lastSelectCount = 0;
+
+    public SelectionConfirmView getSelectionConfirmView() {
+        return selectionConfirmView;
     }
+
+    public SelectedItemCollection getSelectedCollection() {
+        return mSelectedCollection;
+    }
+
 }

@@ -35,6 +35,7 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
     private CheckView mCheckView;
     private ImageView mGifTag;
     private TextView mVideoDuration;
+    private View checkViewClickZone;
 
     private Item mMedia;
     private PreBindInfo mPreBindInfo;
@@ -60,6 +61,8 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
 
         mThumbnail.setOnClickListener(this);
         mCheckView.setOnClickListener(this);
+        checkViewClickZone = findViewById(R.id.check_view_click_zone);
+        checkViewClickZone.setOnClickListener(this);
     }
 
     @Override
@@ -68,6 +71,8 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
             if (v == mThumbnail) {
                 mListener.onThumbnailClicked(mThumbnail, mMedia, mPreBindInfo.mViewHolder);
             } else if (v == mCheckView) {
+                mListener.onCheckViewClicked(mCheckView, mMedia, mPreBindInfo.mViewHolder);
+            } else if (v == checkViewClickZone) {
                 mListener.onCheckViewClicked(mCheckView, mMedia, mPreBindInfo.mViewHolder);
             }
         }

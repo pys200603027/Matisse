@@ -20,11 +20,11 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application>
-        <activity android:name=".ui.MatisseActivity" />
-        <activity android:name=".internal.ui.AlbumPreviewActivity" />
-        <activity android:name=".internal.ui.SelectedPreviewActivity" />
-        <activity android:name=".ui.CopyMatisseActivity" />
-        <activity android:name=".ui.DoubleMatisseActivity"></activity>
+        <activity android:name=".ui.MatisseActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".internal.ui.AlbumPreviewActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".internal.ui.SelectedPreviewActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ui.CopyMatisseActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ui.DoubleMatisseActivity" android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
