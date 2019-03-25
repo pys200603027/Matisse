@@ -89,6 +89,16 @@ public class MediaSelectionLazyFragment extends Fragment implements
     }
 
     public void onLazyLoad() {
+        /**
+         * Bugly
+         *
+         * https://bugly.qq.com/v2/crash-reporting/errors/6a4d96c8b6/107230?pid=1
+         *
+         * Attempt to invoke virtual method 'android.content.res.Resources$Theme android.content.Context.getTheme()' on a null object reference
+         */
+        if (getContext() == null || getArguments() == null) {
+            return;
+        }
         Album album = getArguments().getParcelable(EXTRA_ALBUM);
 
         mAdapter = new AlbumMediaAdapter(getContext(), mSelectionProvider.provideSelectedItemCollection(), mRecyclerView);
