@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -59,6 +60,7 @@ public class MatisseView extends FrameLayout implements
     private SelectionConfirmView selectionConfirmView;
     private View mEmptyView;
     private View mContainer;
+    private boolean isDetachFromWindow = false;
 
     public static final String EXTRA_RESULT_SELECTION = "extra_result_selection";
     public static final String EXTRA_RESULT_SELECTION_PATH = "extra_result_selection_path";
@@ -160,6 +162,10 @@ public class MatisseView extends FrameLayout implements
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    if (isDetachFromWindow) {
+                        Log.e("matisse", "The view is already DetachFromWindow.");
+                        return;
+                    }
                     fragment.attach(MatisseView.this);
                     fragment.onLazyLoad();
                 }
@@ -348,12 +354,14 @@ public class MatisseView extends FrameLayout implements
 
     @Override
     protected void onAttachedToWindow() {
+        isDetachFromWindow = false;
         super.onAttachedToWindow();
         ActivityResultHelper.getInstance().setActivityResultListenter(this);
     }
 
     @Override
     protected void onDetachedFromWindow() {
+        isDetachFromWindow = true;
         super.onDetachedFromWindow();
         ActivityResultHelper.getInstance().setActivityResultListenter(null);
     }

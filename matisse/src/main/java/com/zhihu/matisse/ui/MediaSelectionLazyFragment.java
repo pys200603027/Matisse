@@ -99,27 +99,32 @@ public class MediaSelectionLazyFragment extends Fragment implements
         if (getContext() == null || getArguments() == null) {
             return;
         }
-        Album album = getArguments().getParcelable(EXTRA_ALBUM);
+        try {
+            Album album = getArguments().getParcelable(EXTRA_ALBUM);
 
-        mAdapter = new AlbumMediaAdapter(getContext(), mSelectionProvider.provideSelectedItemCollection(), mRecyclerView);
-        mAdapter.registerCheckStateListener(this);
-        mAdapter.registerOnMediaClickListener(this);
-        mRecyclerView.setHasFixedSize(true);
+            mAdapter = new AlbumMediaAdapter(getContext(), mSelectionProvider.provideSelectedItemCollection(), mRecyclerView);
+            mAdapter.registerCheckStateListener(this);
+            mAdapter.registerOnMediaClickListener(this);
+            mRecyclerView.setHasFixedSize(true);
 
-        int spanCount;
-        SelectionSpec selectionSpec = SelectionSpec.getInstance();
-        if (selectionSpec.gridExpectedSize > 0) {
-            spanCount = UIUtils.spanCount(getContext(), selectionSpec.gridExpectedSize);
-        } else {
-            spanCount = selectionSpec.spanCount;
+            int spanCount;
+            SelectionSpec selectionSpec = SelectionSpec.getInstance();
+            if (selectionSpec.gridExpectedSize > 0) {
+                spanCount = UIUtils.spanCount(getContext(), selectionSpec.gridExpectedSize);
+            } else {
+                spanCount = selectionSpec.spanCount;
+            }
+            mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
+
+            int spacing = getResources().getDimensionPixelSize(R.dimen.media_grid_spacing);
+            mRecyclerView.addItemDecoration(new MediaGridInset(spanCount, spacing, false));
+            mRecyclerView.setAdapter(mAdapter);
+            mAlbumMediaCollection.onCreate(getActivity(), this);
+            mAlbumMediaCollection.load(album, selectionSpec.capture);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
 
-        int spacing = getResources().getDimensionPixelSize(R.dimen.media_grid_spacing);
-        mRecyclerView.addItemDecoration(new MediaGridInset(spanCount, spacing, false));
-        mRecyclerView.setAdapter(mAdapter);
-        mAlbumMediaCollection.onCreate(getActivity(), this);
-        mAlbumMediaCollection.load(album, selectionSpec.capture);
     }
 
 
