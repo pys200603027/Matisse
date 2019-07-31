@@ -98,12 +98,21 @@ public class AlbumCollection implements LoaderManager.LoaderCallbacks<Cursor> {
         mLoaderManager.initLoader(LOADER_ID, null, this);
     }
 
+    public void reloadAlbums() {
+        mLoaderManager.restartLoader(LOADER_ID, null, this);
+        mLoadFinished = false;
+    }
+
     public int getCurrentSelection() {
         return mCurrentSelection;
     }
 
     public void setStateCurrentSelection(int currentSelection) {
         mCurrentSelection = currentSelection;
+    }
+
+    public void resetLoadFinishedFlag() {
+        mLoadFinished = false;
     }
 
     public interface AlbumCallbacks {

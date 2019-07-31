@@ -111,7 +111,7 @@ public class MatisseView extends FrameLayout implements
         }
     }
 
-    public void initAlbum() {
+    public void initAlbum(boolean reload) {
         if (!(getContext() instanceof FragmentActivity)) {
             throw new RuntimeException("Context must be FragmentActivity.");
         }
@@ -119,8 +119,16 @@ public class MatisseView extends FrameLayout implements
         mSelectedCollection.onCreate(null);
         mAlbumCollection.onCreate((FragmentActivity) getContext(), this);
         mAlbumCollection.onRestoreInstanceState(null);
-        mAlbumCollection.loadAlbums();
+        if (reload) {
+            mAlbumCollection.reloadAlbums();
+        } else {
+            mAlbumCollection.loadAlbums();
+        }
         updateBottomToolbar();
+    }
+
+    public void initAlbum() {
+        initAlbum(false);
     }
 
     @Override
