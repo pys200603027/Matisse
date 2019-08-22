@@ -39,6 +39,22 @@ public class DoubleMatisseActivity extends AppCompatActivity implements OnResult
         matisseView.initAlbum();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isPause) {
+            matisseView.initAlbum(true);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isPause = true;
+    }
+
+    boolean isPause = false;
+
     /**
      * for preview callback
      *
