@@ -28,6 +28,7 @@ import androidx.loader.content.Loader;
 
 import com.zhihu.matisse.internal.entity.Album;
 import com.zhihu.matisse.internal.loader.AlbumMediaLoader;
+import com.zhihu.matisse.internal.loader.AlbumMediaLoaderDelegate;
 
 import java.lang.ref.WeakReference;
 
@@ -60,6 +61,14 @@ public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Curso
             return null;
         }
 
+        if (args.getBoolean("isSplit", false)) {
+            int type = args.getInt("type");
+            if (type == 0) {
+                return AlbumMediaLoaderDelegate.newImageInstance(context, album, album.isAll() && args.getBoolean(ARGS_ENABLE_CAPTURE, false));
+            } else {
+                return AlbumMediaLoaderDelegate.newVideoInstance(context, album, album.isAll() && args.getBoolean(ARGS_ENABLE_CAPTURE, false));
+            }
+        }
         return AlbumMediaLoader.newInstance(context, album,
                 album.isAll() && args.getBoolean(ARGS_ENABLE_CAPTURE, false));
     }
@@ -105,6 +114,15 @@ public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Curso
         Bundle args = new Bundle();
         args.putParcelable(ARGS_ALBUM, target);
         args.putBoolean(ARGS_ENABLE_CAPTURE, enableCapture);
+        mLoaderManager.initLoader(getLoaderId(), args, this);
+    }
+
+    public void load(@Nullable Album target, boolean enableCapture, boolean isSplit, int type) {
+        Bundle args = new Bundle();
+        args.putParcelable(ARGS_ALBUM, target);
+        args.putBoolean(ARGS_ENABLE_CAPTURE, enableCapture);
+        args.putBoolean("isSplit", isSplit);
+        args.putInt("type", type);
         mLoaderManager.initLoader(getLoaderId(), args, this);
     }
 
