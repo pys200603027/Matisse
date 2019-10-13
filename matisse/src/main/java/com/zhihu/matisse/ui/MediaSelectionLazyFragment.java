@@ -17,10 +17,12 @@ package com.zhihu.matisse.ui;
 
 import android.database.Cursor;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +42,7 @@ public class MediaSelectionLazyFragment extends Fragment implements
         AlbumMediaAdapter.OnMediaClickListener {
 
     public static final String EXTRA_ALBUM = "extra_album";
+    public static final String EXTRA_LOADER_ID = "extra_loader_id";
 
     private final AlbumMediaCollection mAlbumMediaCollection = new AlbumMediaCollection();
     private RecyclerView mRecyclerView;
@@ -52,6 +55,15 @@ public class MediaSelectionLazyFragment extends Fragment implements
         MediaSelectionLazyFragment fragment = new MediaSelectionLazyFragment();
         Bundle args = new Bundle();
         args.putParcelable(EXTRA_ALBUM, album);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static MediaSelectionLazyFragment newInstance(Album album, int loaderId) {
+        MediaSelectionLazyFragment fragment = new MediaSelectionLazyFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(EXTRA_ALBUM, album);
+        args.putInt(EXTRA_LOADER_ID, loaderId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -120,6 +132,10 @@ public class MediaSelectionLazyFragment extends Fragment implements
             mRecyclerView.addItemDecoration(new MediaGridInset(spanCount, spacing, false));
             mRecyclerView.setAdapter(mAdapter);
             mAlbumMediaCollection.onCreate(getActivity(), this);
+            int loaderId = getArguments().getInt(EXTRA_LOADER_ID, -1);
+            if (loaderId != -1) {
+                mAlbumMediaCollection.setLoaderId(loaderId);
+            }
             mAlbumMediaCollection.load(album, selectionSpec.capture);
         } catch (Exception e) {
             e.printStackTrace();

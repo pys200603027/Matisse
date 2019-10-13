@@ -19,6 +19,7 @@ package com.zhihu.matisse.internal.model;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
@@ -37,6 +38,15 @@ public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Curso
     private WeakReference<Context> mContext;
     private LoaderManager mLoaderManager;
     private AlbumMediaCallbacks mCallbacks;
+    private int loaderId = LOADER_ID;
+
+    public int getLoaderId() {
+        return loaderId;
+    }
+
+    public void setLoaderId(int loaderId) {
+        this.loaderId = loaderId;
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -82,7 +92,7 @@ public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Curso
 
     public void onDestroy() {
         if (mLoaderManager != null) {
-            mLoaderManager.destroyLoader(LOADER_ID);
+            mLoaderManager.destroyLoader(getLoaderId());
         }
         mCallbacks = null;
     }
@@ -95,7 +105,7 @@ public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Curso
         Bundle args = new Bundle();
         args.putParcelable(ARGS_ALBUM, target);
         args.putBoolean(ARGS_ENABLE_CAPTURE, enableCapture);
-        mLoaderManager.initLoader(LOADER_ID, args, this);
+        mLoaderManager.initLoader(getLoaderId(), args, this);
     }
 
     public interface AlbumMediaCallbacks {
