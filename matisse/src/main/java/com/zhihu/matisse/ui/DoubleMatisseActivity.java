@@ -35,6 +35,23 @@ public class DoubleMatisseActivity extends AppCompatActivity implements OnResult
         setContentView(R.layout.activity_double_matisse);
         matisseView = findViewById(R.id.mv);
         matisseView.initAlbum();
+
+
+
+        Matisse.from(this)
+                .choose(MimeType.ofImage())
+                .theme(R.style.Matisse_Dracula)
+                .countable(false)
+                .maxSelectable(9)
+                .originalEnable(false)
+                .maxOriginalSize(10)
+                .imageEngine(new PicassoEngine())
+                .forCallback(new OnResultListener() {
+                    @Override
+                    public void onResult(int requestCode, Intent data) {
+                        Log.d("123", "resustCode:" + requestCode);
+                    }
+                });
     }
 
     @Override

@@ -17,8 +17,8 @@ afterEvaluate { project ->
         repositories {
             mavenDeployer {
                 pom.groupId = GROUP
-                pom.artifactId = "matisse"
-                pom.version = "1.0.3"
+                pom.artifactId = "matissex"
+                pom.version = "1.0.0"
                 repository(url: getRepositoryUrl()) {
                     authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
                 }
