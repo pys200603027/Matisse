@@ -19,6 +19,7 @@ package com.zhihu.matisse;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -359,6 +360,22 @@ public final class SelectionCreator {
         }
 
         Intent intent = new Intent(activity, MatisseActivity.class);
+
+        Fragment fragment = mMatisse.getFragment();
+        if (fragment != null) {
+            fragment.startActivityForResult(intent, requestCode);
+        } else {
+            activity.startActivityForResult(intent, requestCode);
+        }
+    }
+
+    public void forResult(int requestCode, Class activityClass) {
+        Activity activity = mMatisse.getActivity();
+        if (activity == null) {
+            return;
+        }
+
+        Intent intent = new Intent(activity, activityClass);
 
         Fragment fragment = mMatisse.getFragment();
         if (fragment != null) {

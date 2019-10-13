@@ -2,10 +2,12 @@ package com.zhihu.matisse.ui;
 
 import android.content.Context;
 import android.net.Uri;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
