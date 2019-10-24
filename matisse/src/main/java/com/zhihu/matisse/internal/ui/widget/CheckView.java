@@ -27,7 +27,9 @@ import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+
 import androidx.core.content.res.ResourcesCompat;
+
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
@@ -39,7 +41,7 @@ public class CheckView extends View {
     public static final int UNCHECKED = Integer.MIN_VALUE;
     private static final float STROKE_WIDTH = 1.0f; // dp
     private static final float SHADOW_WIDTH = 6.0f; // dp
-    private static final int SIZE = 32; // dp
+    private static final int SIZE = 26; // dp
     private static final float STROKE_RADIUS = 11.5f; // dp
     private static final float BG_RADIUS = 11.0f; // dp
     private static final int CONTENT_SIZE = 16; // dp
@@ -158,8 +160,8 @@ public class CheckView extends View {
                 canvas.drawCircle((float) SIZE * mDensity / 2, (float) SIZE * mDensity / 2,
                         BG_RADIUS * mDensity, mBackgroundPaint);
 
-                mCheckDrawable.setBounds(getCheckRect());
-                mCheckDrawable.draw(canvas);
+//                mCheckDrawable.setBounds(getCheckRect());
+//                mCheckDrawable.draw(canvas);
             }
         }
 
