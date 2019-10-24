@@ -121,7 +121,7 @@ public class MediaSelectionFragment extends Fragment implements
         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
 
         int spacing = getResources().getDimensionPixelSize(R.dimen.media_grid_spacing);
-        mRecyclerView.addItemDecoration(new MediaGridInset(spanCount, spacing, false));
+        mRecyclerView.addItemDecoration(new MediaGridInset(spanCount, spacing, true));
         mRecyclerView.setAdapter(mAdapter);
 
         int loaderId = getArguments().getInt(EXTRA_LOADER_ID, -1);

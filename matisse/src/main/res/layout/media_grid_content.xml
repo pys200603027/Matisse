@@ -23,12 +23,14 @@
 
     <RelativeLayout
         android:id="@+id/check_view_click_zone"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_gravity="top|right">
 
         <com.zhihu.matisse.internal.ui.widget.CheckView
             android:id="@+id/check_view"
+            android:layout_marginTop="6dp"
+            android:layout_marginRight="6dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true" />
@@ -54,7 +56,7 @@
         android:drawableLeft="@drawable/icon_media_video"
         android:drawablePadding="6dp"
         android:textColor="@android:color/white"
-        android:textSize="16sp"
+        android:textSize="12sp"
         android:textStyle="bold"
         android:visibility="gone" />
 </merge>
