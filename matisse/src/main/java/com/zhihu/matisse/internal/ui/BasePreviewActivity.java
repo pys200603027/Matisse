@@ -113,7 +113,7 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
         mBottomToolbar = findViewById(R.id.bottom_toolbar);
         mTopToolbar = findViewById(R.id.top_toolbar);
 
-        mCheckView.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.check_view_cc).setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
