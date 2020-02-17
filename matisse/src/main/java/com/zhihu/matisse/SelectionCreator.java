@@ -346,6 +346,11 @@ public final class SelectionCreator {
         return this;
     }
 
+    public SelectionCreator setBottomSelectColor(int color) {
+        mSelectionSpec.bottomColor = color;
+        return this;
+    }
+
 
     /**
      * Start to select media and wait for result.
@@ -392,5 +397,6 @@ public final class SelectionCreator {
     public void forCallback(OnResultListener onResultListener) {
         mSelectionSpec.onResultListener = onResultListener;
     }
+
 
 }

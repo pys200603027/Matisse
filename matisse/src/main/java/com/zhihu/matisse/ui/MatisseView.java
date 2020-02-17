@@ -109,6 +109,10 @@ public class MatisseView extends FrameLayout implements
         if (mSpec.onResultListener != null) {
             this.onResultListener = mSpec.onResultListener;
         }
+        //改变底部颜色
+        if (mSpec.bottomColor != 0) {
+            selectionConfirmView.setBackgroundColor(getResources().getColor(mSpec.bottomColor));
+        }
     }
 
     public void initAlbum(boolean reload) {
