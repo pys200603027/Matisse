@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -113,6 +114,7 @@ public class MatisseView extends FrameLayout implements
         if (mSpec.bottomColor != 0) {
             selectionConfirmView.setBackgroundColor(getResources().getColor(mSpec.bottomColor));
         }
+        selectionConfirmView.setBackgroundColor(Color.parseColor("#3b3b3d"));
     }
 
     public void initAlbum(boolean reload) {

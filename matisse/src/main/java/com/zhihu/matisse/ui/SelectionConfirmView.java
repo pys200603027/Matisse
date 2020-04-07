@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.zhihu.matisse.R;
@@ -38,6 +39,7 @@ public class SelectionConfirmView extends LinearLayout implements View.OnClickLi
      * confirm & send
      */
     View sendView;
+    ViewGroup rootContentView;
 
     public SelectionConfirmView(Context context) {
         super(context);
@@ -59,7 +61,15 @@ public class SelectionConfirmView extends LinearLayout implements View.OnClickLi
         sendView = findViewById(R.id.tv_send);
         sendView.setOnClickListener(this);
 
+        rootContentView = findViewById(R.id.root_ll);
+
         initRecyclerView();
+    }
+
+    @Override
+    public void setBackgroundColor(int color) {
+        super.setBackgroundColor(color);
+        rootContentView.setBackgroundColor(color);
     }
 
     private void initRecyclerView() {
